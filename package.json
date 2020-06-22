@@ -1,0 +1,37 @@
+{
+  "name": "cardano-explorer-script-generator",
+  "version": "1.0.0",
+  "description": "Fake data generating script",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "eslint": "./node_modules/eslint/bin/eslint.js . --ext .js"
+  },
+  "author": "Leonel Gobbi",
+  "license": "ISC",
+  "dependencies": {
+    "faker": "4.1.0",
+    "pg-promise": "10.5.6",
+    "yargs": "15.3.1"
+  },
+  "devDependencies": {
+    "@atixlabs/eslint-config": "1.2.2",
+    "eslint": "6.7.2",
+    "eslint-plugin-filenames": "1.3.2",
+    "eslint-plugin-import": "2.19.1",
+    "eslint-plugin-prettier": "3.1.1",
+    "eslint-plugin-promise": "4.2.1",
+    "eslint-plugin-sonarjs": "0.5.0",
+    "eslint-plugin-unicorn": "14.0.1",
+    "prettier": "1.19.1"
+  },
+  "bin": {
+    "cardano-script-gen": "./index.js"
+  },
+  "files": [
+    "src/*",
+    "index.js",
+    "settings.json",
+    "README.md"
+  ]
+}

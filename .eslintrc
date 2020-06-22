@@ -1,0 +1,9 @@
+{
+  "extends": ["@atixlabs/eslint-config/configurations/node"],
+  "rules": {
+    "camelcase": "off",
+    "unicorn/prevent-abbreviations": "off",
+    "no-console": "off",
+    "unicorn/filename-case": "off"
+  }
+}
