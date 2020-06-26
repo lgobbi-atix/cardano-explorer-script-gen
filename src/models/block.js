@@ -19,6 +19,7 @@ exports.generate = (previousId, epochNo, slotNo, txCount) => {
     previous: previousId,
     merkel_root: dataTypes.hash32type(),
     slot_leader: slotLeaders.data[randomNumber(0, SLOT_LEADERS_COUNT - 1)].id,
+    size: dataTypes.uinteger(),
     epoch_no: epochNo,
     time: new Date(),
     tx_count: txCount || 0

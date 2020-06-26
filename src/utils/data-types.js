@@ -15,10 +15,16 @@ const arrayOf = (dataType, min = 1, max) => {
 const nullable = dataType => faker.helpers.randomize([dataType, null]);
 const decodeHash = hash => `decode(${hash},'hex')`;
 const randomNumber = (min = 0, max = INTEGER_MAX) => faker.random.number({ min, max });
-const randomHash = length => faker.random.alphaNumeric(length);
+const randomHash = length => faker.random.hexaDecimal(length);
 
-const hash28type = () => randomHash(HASH28_LENGTH).toUpperCase();
-const hash32type = () => randomHash(HASH32_LENGTH).toUpperCase();
+const hash28type = () =>
+  randomHash(HASH28_LENGTH)
+    .toUpperCase()
+    .replace('0X', '');
+const hash32type = () =>
+  randomHash(HASH32_LENGTH)
+    .toUpperCase()
+    .replace('0X', '');
 
 const lovelace = () => randomNumber(0, LOVELACTE_MAX);
 const outsum = () => randomNumber(0, BIGINT_MAX);
