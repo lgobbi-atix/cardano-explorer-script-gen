@@ -2,3 +2,4 @@ node_modules
 in
 out
 schema_old.sql
+*.tgz

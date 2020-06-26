@@ -1,6 +1,6 @@
 {
   "name": "cardano-explorer-script-generator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Fake data generating script",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
   "author": "Leonel Gobbi",
   "license": "ISC",
   "dependencies": {
-    "faker": "4.1.0",
+    "faker": "git+https://github.com/Marak/faker.js.git#master",
     "pg-promise": "10.5.6",
     "yargs": "15.3.1"
   },
