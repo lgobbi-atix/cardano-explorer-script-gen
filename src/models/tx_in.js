@@ -4,7 +4,7 @@ const idManager = require('../utils/id-manager');
 exports.generate = (txInId, txOutId, txoutIndex) => {
   if (!txInId) throw new Error('tx_in need txInId reference');
   if (!txOutId) throw new Error('tx_in need txOutId reference');
-  if (!txoutIndex) throw new Error('tx_in need txoutIndex reference');
+  if (txoutIndex === null) throw new Error('tx_in need txoutIndex reference');
   return {
     id: idManager.getNextTxInId(),
     tx_in_id: txInId, // from tx.id
