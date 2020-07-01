@@ -5,10 +5,17 @@ const {
 } = require('../utils/data-types');
 const { generateBlock } = require('./block');
 
-exports.generateEpoch = ({ transactionCount, blockCount, totalFeesPaid, totalOutput }) => {
+exports.generateEpoch = ({
+  transactionCount,
+  blockCount,
+  totalFeesPaid,
+  totalOutput,
+  utxoStateAmount
+}) => {
   let totalTxs = transactionCount;
   let totalFees = totalFeesPaid;
   let totalOut = totalOutput;
+  let totalUtxos = utxoStateAmount;
 
   let lastBlockId = settings.nextBlockId;
   const blocks = [];
@@ -19,6 +26,8 @@ exports.generateEpoch = ({ transactionCount, blockCount, totalFeesPaid, totalOut
     let feesPaid = 0;
     let output = 0;
     const txsInBlock = isLastBlock ? totalTxs : randomNumber(0, totalTxs);
+    let utxosInBlock = isLastBlock ? totalUtxos : randomNumber(0, txsInBlock);
+    if (totalUtxos - utxosInBlock < 0) utxosInBlock = totalUtxos;
     const hasLastTx = txsInBlock === totalTxs;
     if (txsInBlock > 0) {
       feesPaid = isLastBlock || hasLastTx ? totalFees : randomNumber(0, totalFees);
@@ -30,12 +39,18 @@ exports.generateEpoch = ({ transactionCount, blockCount, totalFeesPaid, totalOut
       epochNo: epoch.no,
       slotNo: i + 1,
       transactionCount: txsInBlock,
+      utxoCount: utxosInBlock,
       totalFeesPaid: feesPaid,
       totalOutput: output
     });
+
+    // Remove an utxosInBlock amount of txIns
+    for (let j = 0; j < utxosInBlock; j++)
+      block.txIns.splice(randomNumber(0, block.txIns.length - 1), 1);
     blocks.push(block);
 
     totalTxs -= txsInBlock;
+    totalUtxos -= utxosInBlock;
     totalFees -= feesPaid;
     totalOut -= output;
     lastBlockId = block.id;

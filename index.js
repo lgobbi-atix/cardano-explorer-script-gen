@@ -2,7 +2,7 @@
 
 const path = require('path');
 const pgp = require('pg-promise');
-const { blockGen, epochGen, txGen } = require('./src/models');
+const { blockGen, epochGen, txGen, txInGen, txOutGen } = require('./src/models');
 const { generateEpoch } = require('./src/generators');
 
 const {
@@ -39,7 +39,19 @@ const generateAll = async (inputFile, outputFolder) => {
     const { query, values } = txGen.buildQuery(tx);
     return pgp.as.format(query, values);
   });
+  const txOuts = blocks.flatMap(block => block.txOuts);
+  const txOutQueries = txOuts.map(tx => {
+    const { query, values } = txOutGen.buildQuery(tx);
+    return pgp.as.format(query, values);
+  });
+  const txIns = blocks.flatMap(block => block.txIns);
+  const txInQueries = txIns.map(tx => {
+    const { query, values } = txInGen.buildQuery(tx);
+    return pgp.as.format(query, values);
+  });
   await writeToFile('txs.sql', txQueries.join('\n'), outputFolderPath);
+  await writeToFile('tx_outs.sql', txOutQueries.join('\n'), outputFolderPath);
+  await writeToFile('tx_ins.sql', txInQueries.join('\n'), outputFolderPath);
 
   updateSettings();
 };
