@@ -43,9 +43,6 @@ exports.generateEpoch = ({
       totalOutput: output
     });
 
-    // Remove an utxosInBlock amount of txIns
-    for (let j = 0; j < utxosInBlock; j++)
-      block.txIns.splice(randomNumber(0, block.txIns.length - 1), 1);
     blocks.push(block);
 
     totalTxs -= txsInBlock;
@@ -54,5 +51,6 @@ exports.generateEpoch = ({
     totalOut -= output;
     lastBlockId = block.id;
   }
+
   return { ...epoch, blocks };
 };
