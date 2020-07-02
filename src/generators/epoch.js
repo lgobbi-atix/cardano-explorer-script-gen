@@ -39,7 +39,6 @@ exports.generateEpoch = ({
       epochNo: epoch.no,
       slotNo: i + 1,
       transactionCount: txsInBlock,
-      utxoCount: utxosInBlock,
       totalFeesPaid: feesPaid,
       totalOutput: output
     });
