@@ -4,6 +4,7 @@ const path = require('path');
 const pgp = require('pg-promise');
 const { blockGen, epochGen, txGen, txInGen, txOutGen } = require('./src/models');
 const { generateEpoch } = require('./src/generators');
+const { generateTxIns } = require('./src/generators/tx');
 
 const {
   updateSettings,
@@ -13,6 +14,7 @@ const {
 } = require('./src/utils/id-manager');
 const { parseInput, writeToFile } = require('./src/utils/files');
 const { argv } = require('./src/cli-config');
+const { reduceBlocksToKeyPerEpoch } = require('./src/utils/structures-helpers');
 
 const generateAll = async (inputFile, outputFolder) => {
   const inputFilepath = path.resolve(inputFile);
@@ -28,6 +30,12 @@ const generateAll = async (inputFile, outputFolder) => {
   await writeToFile('epochs.sql', epochQueries.join('\n'), outputFolderPath);
 
   const blocks = epochs.flatMap(epoch => epoch.blocks);
+
+  const txIns = generateTxIns({
+    txs: reduceBlocksToKeyPerEpoch(blocks, 'txs'),
+    txOuts: reduceBlocksToKeyPerEpoch(blocks, 'txOuts'),
+    utxoCount: input.map(epoch => epoch.utxoStateAmount)
+  }).flat();
   const blockQueries = blocks.map(block => {
     const { query, values } = blockGen.buildQuery(block);
     return pgp.as.format(query, values);
@@ -44,7 +52,6 @@ const generateAll = async (inputFile, outputFolder) => {
     const { query, values } = txOutGen.buildQuery(tx);
     return pgp.as.format(query, values);
   });
-  const txIns = blocks.flatMap(block => block.txIns);
   const txInQueries = txIns.map(tx => {
     const { query, values } = txInGen.buildQuery(tx);
     return pgp.as.format(query, values);

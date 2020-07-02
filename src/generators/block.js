@@ -2,7 +2,7 @@ const { blockGen } = require('../models');
 const {
   helpers: { randomNumber }
 } = require('../utils/data-types');
-const { generateTx, generateTxIn, generateTxOut } = require('./tx');
+const { generateTx, generateTxOut } = require('./tx');
 
 exports.generateBlock = ({
   previous,
@@ -34,7 +34,6 @@ exports.generateBlock = ({
   }
 
   const txOuts = txs.map(tx => generateTxOut(tx.id));
-  const txIns = txs.map((tx, i) => generateTxIn(tx.id, txOuts[i].id, txOuts[i].index));
 
-  return { ...block, txs, txOuts, txIns };
+  return { ...block, txs, txOuts };
 };
