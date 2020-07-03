@@ -3,7 +3,7 @@ const {
   helpers: { randomNumber }
 } = require('../utils/data-types');
 
-const setAdaInTxOutsWithoutTxIns = ({ txOuts, txIns, totalAda }) => {
+const getTxOutsWithoutTxIns = ({ txOuts, txIns }) => {
   const txOutsWithoutTxsIn = [];
   const epochsAmount = txOuts.length;
   const txInsFlatted = txIns.flat();
@@ -17,17 +17,27 @@ const setAdaInTxOutsWithoutTxIns = ({ txOuts, txIns, totalAda }) => {
         txOutsWithoutTxsIn[currentEpoch].push(txOut);
     }
   }
+  return txOutsWithoutTxsIn;
+};
+
+const setAdaInTxOuts = ({ txOuts, totalAda }) => {
+  const epochsAmount = txOuts.length;
   for (let currentEpoch = 0; currentEpoch < epochsAmount; currentEpoch++) {
     let remainingAda = totalAda[currentEpoch];
-    const txOutsAmount = txOutsWithoutTxsIn[currentEpoch].length;
+    const txOutsAmount = txOuts[currentEpoch].length;
     for (let currentTxOut = 0; currentTxOut < txOutsAmount; currentTxOut++) {
       const adaInTxOut =
         currentTxOut === txOutsAmount ? remainingAda : randomNumber(0, remainingAda);
-      txOutsWithoutTxsIn[currentEpoch][currentTxOut].value = adaInTxOut;
+      txOuts[currentEpoch][currentTxOut].value = adaInTxOut;
       remainingAda -= adaInTxOut;
     }
   }
-  return txOutsWithoutTxsIn;
+  return txOuts;
+};
+
+const setAdaInTxOutsWithoutTxIns = ({ txOuts, txIns, totalAda }) => {
+  const txOutsWithoutTxsIn = getTxOutsWithoutTxIns({ txOuts, txIns });
+  return setAdaInTxOuts({ txOuts: txOutsWithoutTxsIn, totalAda });
 };
 
 exports.generateTx = (blockId, fee, outSum) => txGen.generate(blockId, { fee, outSum });
