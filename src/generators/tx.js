@@ -5,10 +5,11 @@ const {
 
 exports.generateTx = (blockId, fee, outSum) => txGen.generate(blockId, { fee, outSum });
 
-exports.generateTxIns = ({ txs, txOuts, utxoCount }) => {
+exports.generateTxInsOuts = ({ txs, txOuts, utxoCount, totalAda }) => {
   const epochsAmount = txs.length;
   const txIns = [];
   for (let currentEpoch = 0; currentEpoch < epochsAmount; currentEpoch++) {
+    let remainingAda = totalAda[currentEpoch];
     const txOutsWithTxIns = [...txOuts[currentEpoch]];
     const txsWithTxIns = [...txs];
     let i = 0;
@@ -26,11 +27,20 @@ exports.generateTxIns = ({ txs, txOuts, utxoCount }) => {
       if (!tx) continue;
       if (!txIns[currentEpoch]) txIns[currentEpoch] = [];
       txIns[currentEpoch].push(txInGen.generate(tx.id, txOut.id));
+      // Set ADA in that txOut
+      const adaInTxOut =
+        i === txOuts[currentEpoch].length - utxoCount[currentEpoch] - 1
+          ? remainingAda
+          : randomNumber(0, remainingAda);
+      txOuts[currentEpoch][
+        txOuts[currentEpoch].findIndex(({ id }) => txOut.id === id)
+      ].value = adaInTxOut;
+      remainingAda -= adaInTxOut;
       i++;
     }
   }
 
-  return txIns;
+  return { txIns: txIns.flat(), txOuts: txOuts.flat() };
 };
 
 exports.generateTxOut = txid => txOutGen.generate(txid);
