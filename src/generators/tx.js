@@ -14,19 +14,20 @@ exports.generateTxInsOuts = ({ txs, txOuts, utxoCount, totalAda }) => {
     const txsWithTxIns = [...txs];
     let i = 0;
     while (i < txOuts[currentEpoch].length - utxoCount[currentEpoch]) {
-      const epochIndex = randomNumber(currentEpoch, epochsAmount - 1);
+      const epochIndex = randomNumber(0, epochsAmount - 1);
       const txIndex = randomNumber(0, txOutsWithTxIns.length - 1);
-      // Pick a random txOut
-      const [txOut] = txOutsWithTxIns.splice(txIndex, 1);
       // Pick a tx that happened after that txOut
       const [tx] = txsWithTxIns[epochIndex].splice(
-        randomNumber(txIndex + 1, txsWithTxIns.length - 1),
+        randomNumber(txIndex, txsWithTxIns.length - 1),
         1
       );
       // May be out of bounds
       if (!tx) continue;
       if (!txIns[currentEpoch]) txIns[currentEpoch] = [];
-      txIns[currentEpoch].push(txInGen.generate(tx.id, txOut.id));
+      // Pick a random txOut
+      const [txOut] = txOutsWithTxIns.splice(txIndex, 1);
+      if (!txIns[currentEpoch]) txIns[currentEpoch] = [];
+      txIns[currentEpoch].push(txInGen.generate(tx.id, txOut.id, txOut.index));
       // Set ADA in that txOut
       const adaInTxOut =
         i === txOuts[currentEpoch].length - utxoCount[currentEpoch] - 1
