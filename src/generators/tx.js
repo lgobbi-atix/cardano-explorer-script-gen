@@ -25,7 +25,7 @@ exports.generateTxIns = ({ txs, txOuts, utxoCount }) => {
       // Pick a random txOut
       const [txOut] = txOutsWithTxIns.splice(txIndex, 1);
       if (!txIns[currentEpoch]) txIns[currentEpoch] = [];
-      txIns[currentEpoch].push(txInGen.generate(tx.id, txOut.id));
+      txIns[currentEpoch].push(txInGen.generate(tx.id, txOut.id, txOut.index));
       i++;
     }
   }
