@@ -3,41 +3,46 @@ const {
   helpers: { randomNumber }
 } = require('../utils/data-types');
 
-const getTxOutsWithoutTxIns = ({ txOuts, txIns }) => {
-  const txOutsWithoutTxsIn = [];
+const markTxOutsWithoutTxIns = ({ txOuts, txIns }) => {
+  const markedTxOutsWithoutTxsIn = [];
   const epochsAmount = txOuts.length;
   const txInsFlatted = txIns.flat();
   for (let currentEpoch = 0; currentEpoch < epochsAmount; currentEpoch++) {
     const txsAmount = txOuts[currentEpoch].length;
-    txOutsWithoutTxsIn[currentEpoch] = [];
+    markedTxOutsWithoutTxsIn[currentEpoch] = [];
     for (let currentTx = 0; currentTx < txsAmount; currentTx++) {
       const txOut = txOuts[currentEpoch][currentTx];
-      // If that txOut doesn't have a txIn add to the txOuts that will be setted
-      if (txInsFlatted.findIndex(txIn => txIn.tx_out_id === txOut.id) === -1)
-        txOutsWithoutTxsIn[currentEpoch].push(txOut);
+      markedTxOutsWithoutTxsIn[currentEpoch].push({
+        hasTxIn: txInsFlatted.findIndex(txIn => txIn.tx_out_id === txOut.id) === -1,
+        ...txOut
+      });
     }
   }
-  return txOutsWithoutTxsIn;
+  return markedTxOutsWithoutTxsIn;
 };
 
 const setAdaInTxOuts = ({ txOuts, totalAda }) => {
   const epochsAmount = txOuts.length;
+  const settedTxOuts = [...txOuts];
   for (let currentEpoch = 0; currentEpoch < epochsAmount; currentEpoch++) {
     let remainingAda = totalAda[currentEpoch];
-    const txOutsAmount = txOuts[currentEpoch].length;
+    const txOutsAmount = settedTxOuts[currentEpoch].length;
     for (let currentTxOut = 0; currentTxOut < txOutsAmount; currentTxOut++) {
-      const adaInTxOut =
-        currentTxOut === txOutsAmount ? remainingAda : randomNumber(0, remainingAda);
-      txOuts[currentEpoch][currentTxOut].value = adaInTxOut;
-      remainingAda -= adaInTxOut;
+      if (txOuts[currentEpoch][currentTxOut].hasTxIn) {
+        const adaInTxOut =
+          currentTxOut === txOutsAmount ? remainingAda : randomNumber(0, remainingAda);
+        settedTxOuts[currentEpoch][currentTxOut].value = adaInTxOut;
+        remainingAda -= adaInTxOut;
+      }
+      delete settedTxOuts[currentEpoch][currentTxOut].hasTxIn;
     }
   }
-  return txOuts;
+  return settedTxOuts;
 };
 
 const setAdaInTxOutsWithoutTxIns = ({ txOuts, txIns, totalAda }) => {
-  const txOutsWithoutTxsIn = getTxOutsWithoutTxIns({ txOuts, txIns });
-  return setAdaInTxOuts({ txOuts: txOutsWithoutTxsIn, totalAda });
+  const markedTxOuts = markTxOutsWithoutTxIns({ txOuts, txIns });
+  return setAdaInTxOuts({ txOuts: markedTxOuts, totalAda });
 };
 
 exports.generateTx = (blockId, fee, outSum) => txGen.generate(blockId, { fee, outSum });
