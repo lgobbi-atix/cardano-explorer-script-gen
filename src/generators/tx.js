@@ -23,7 +23,6 @@ exports.generateTxInsOuts = ({ txs, txOuts, utxoCount, totalAda }) => {
       );
       // May be out of bounds
       if (!tx) continue;
-      if (!txIns[currentEpoch]) txIns[currentEpoch] = [];
       // Pick a random txOut
       const [txOut] = txOutsWithTxIns.splice(txIndex, 1);
       if (!txIns[currentEpoch]) txIns[currentEpoch] = [];
