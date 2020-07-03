@@ -9,7 +9,14 @@ const now = new Date().getTime();
 // eslint-disable-next-line complexity
 const validateEpoch = (epoch, index) => {
   const epochNo = index + 1;
-  const { blockCount, transactionCount, totalFeesPaid, totalOutput, utxoStateAmount } = epoch;
+  const {
+    blockCount,
+    transactionCount,
+    totalFeesPaid,
+    totalOutput,
+    utxoStateAmount,
+    totalAdaAmountInUtxoSet
+  } = epoch;
   if (blockCount === undefined) {
     throw new Error(`Epoch number ${epochNo} doesn't have a blockCount field`);
   }
@@ -31,6 +38,11 @@ const validateEpoch = (epoch, index) => {
   if (utxoStateAmount && (utxoStateAmount < 0 || utxoStateAmount > transactionCount)) {
     throw new Error(`Epoch number ${epochNo} has an invalid utxoStateAmount (${utxoStateAmount}).
       Must be a value between 0 and ${transactionCount}`);
+  }
+  if (!totalAdaAmountInUtxoSet || totalAdaAmountInUtxoSet < 0) {
+    throw new Error(
+      `Epoch number ${epochNo} has an invalid totalAdaAmountInUtxoSet (${totalAdaAmountInUtxoSet}).`
+    );
   }
 };
 
