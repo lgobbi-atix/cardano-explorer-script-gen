@@ -26,8 +26,7 @@ exports.generateEpoch = ({
     let feesPaid = 0;
     let output = 0;
     const txsInBlock = isLastBlock ? totalTxs : randomNumber(0, totalTxs);
-    let utxosInBlock = isLastBlock ? totalUtxos : randomNumber(0, txsInBlock);
-    if (totalUtxos - utxosInBlock < 0) utxosInBlock = totalUtxos;
+    let utxosInBlock = isLastBlock ? totalUtxos : randomNumber(0, totalUtxos);
     const hasLastTx = txsInBlock === totalTxs;
     if (txsInBlock > 0) {
       feesPaid = isLastBlock || hasLastTx ? totalFees : randomNumber(0, totalFees);
