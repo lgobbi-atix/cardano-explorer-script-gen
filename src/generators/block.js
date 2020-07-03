@@ -2,7 +2,7 @@ const { blockGen } = require('../models');
 const {
   helpers: { randomNumber }
 } = require('../utils/data-types');
-const { generateTx } = require('./tx');
+const { generateTx, generateTxOut } = require('./tx');
 
 exports.generateBlock = ({
   previous,
@@ -32,5 +32,8 @@ exports.generateBlock = ({
     totalFees -= feesPaid;
     totalOut -= output;
   }
-  return { ...block, txs };
+
+  const txOuts = txs.map(tx => generateTxOut(tx.id));
+
+  return { ...block, txs, txOuts };
 };
