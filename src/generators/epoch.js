@@ -5,17 +5,10 @@ const {
 } = require('../utils/data-types');
 const { generateBlock } = require('./block');
 
-exports.generateEpoch = ({
-  transactionCount,
-  blockCount,
-  totalFeesPaid,
-  totalOutput,
-  utxoStateAmount
-}) => {
+exports.generateEpoch = ({ transactionCount, blockCount, totalFeesPaid, totalOutput }) => {
   let totalTxs = transactionCount;
   let totalFees = totalFeesPaid;
   let totalOut = totalOutput;
-  let totalUtxos = utxoStateAmount;
 
   let lastBlockId = settings.nextBlockId;
   const blocks = [];
@@ -26,7 +19,6 @@ exports.generateEpoch = ({
     let feesPaid = 0;
     let output = 0;
     const txsInBlock = isLastBlock ? totalTxs : randomNumber(0, totalTxs);
-    const utxosInBlock = isLastBlock ? totalUtxos : randomNumber(0, totalUtxos);
     const hasLastTx = txsInBlock === totalTxs;
     if (txsInBlock > 0) {
       feesPaid = isLastBlock || hasLastTx ? totalFees : randomNumber(0, totalFees);
@@ -45,7 +37,6 @@ exports.generateEpoch = ({
     blocks.push(block);
 
     totalTxs -= txsInBlock;
-    totalUtxos -= utxosInBlock;
     totalFees -= feesPaid;
     totalOut -= output;
     lastBlockId = block.id;
