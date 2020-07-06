@@ -2,8 +2,9 @@
 
 const path = require('path');
 const pgp = require('pg-promise');
-const { blockGen, epochGen, txGen } = require('./src/models');
+const { blockGen, epochGen, txGen, txInGen, txOutGen } = require('./src/models');
 const { generateEpoch } = require('./src/generators');
+const { generateTxInsOuts } = require('./src/generators/tx');
 
 const {
   updateSettings,
@@ -13,6 +14,7 @@ const {
 } = require('./src/utils/id-manager');
 const { parseInput, writeToFile } = require('./src/utils/files');
 const { argv } = require('./src/cli-config');
+const { reduceBlocksToKeyPerEpoch } = require('./src/utils/structures-helpers');
 
 const generateAll = async (inputFile, outputFolder) => {
   const inputFilepath = path.resolve(inputFile);
@@ -28,6 +30,13 @@ const generateAll = async (inputFile, outputFolder) => {
   await writeToFile('epochs.sql', epochQueries.join('\n'), outputFolderPath);
 
   const blocks = epochs.flatMap(epoch => epoch.blocks);
+
+  const { txIns, txOuts } = generateTxInsOuts({
+    txs: reduceBlocksToKeyPerEpoch(blocks, 'txs'),
+    txOuts: reduceBlocksToKeyPerEpoch(blocks, 'txOuts'),
+    utxoCount: input.map(epoch => epoch.utxoStateAmount),
+    totalAda: input.map(epoch => epoch.totalAdaAmountInUtxoSet)
+  });
   const blockQueries = blocks.map(block => {
     const { query, values } = blockGen.buildQuery(block);
     return pgp.as.format(query, values);
@@ -39,7 +48,17 @@ const generateAll = async (inputFile, outputFolder) => {
     const { query, values } = txGen.buildQuery(tx);
     return pgp.as.format(query, values);
   });
+  const txOutQueries = txOuts.map(tx => {
+    const { query, values } = txOutGen.buildQuery(tx);
+    return pgp.as.format(query, values);
+  });
+  const txInQueries = txIns.map(tx => {
+    const { query, values } = txInGen.buildQuery(tx);
+    return pgp.as.format(query, values);
+  });
   await writeToFile('txs.sql', txQueries.join('\n'), outputFolderPath);
+  await writeToFile('tx_outs.sql', txOutQueries.join('\n'), outputFolderPath);
+  await writeToFile('tx_ins.sql', txInQueries.join('\n'), outputFolderPath);
 
   updateSettings();
 };

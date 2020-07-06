@@ -6,9 +6,17 @@ const MAX_LOVELACE_AMOUNT = 45000000000000000;
 
 const now = new Date().getTime();
 
+// eslint-disable-next-line complexity
 const validateEpoch = (epoch, index) => {
   const epochNo = index + 1;
-  const { blockCount, transactionCount, totalFeesPaid, totalOutput } = epoch;
+  const {
+    blockCount,
+    transactionCount,
+    totalFeesPaid,
+    totalOutput,
+    utxoStateAmount,
+    totalAdaAmountInUtxoSet
+  } = epoch;
   if (blockCount === undefined) {
     throw new Error(`Epoch number ${epochNo} doesn't have a blockCount field`);
   }
@@ -26,6 +34,15 @@ const validateEpoch = (epoch, index) => {
   if (totalOutput && (totalOutput < 0 || totalOutput > MAX_LOVELACE_AMOUNT)) {
     throw new Error(`Epoch number ${epochNo} has an invalid totalOutput (${totalOutput}).
       Must be a value between 0 and ${MAX_LOVELACE_AMOUNT}`);
+  }
+  if (utxoStateAmount && (utxoStateAmount < 0 || utxoStateAmount > transactionCount)) {
+    throw new Error(`Epoch number ${epochNo} has an invalid utxoStateAmount (${utxoStateAmount}).
+      Must be a value between 0 and ${transactionCount}`);
+  }
+  if (!totalAdaAmountInUtxoSet || totalAdaAmountInUtxoSet < 0) {
+    throw new Error(
+      `Epoch number ${epochNo} has an invalid totalAdaAmountInUtxoSet (${totalAdaAmountInUtxoSet}).`
+    );
   }
 };
 

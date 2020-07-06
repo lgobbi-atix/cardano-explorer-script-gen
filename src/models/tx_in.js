@@ -9,7 +9,7 @@ exports.generate = (txInId, txOutId, txoutIndex) => {
     id: idManager.getNextTxInId(),
     tx_in_id: txInId, // from tx.id
     tx_out_id: txOutId, // from tx.id
-    tx_out_index: dataTypes.txindex() // UNIQUE (tx_out_id, tx_out_index);
+    tx_out_index: txoutIndex // UNIQUE (tx_out_id, tx_out_index);
   };
 };
 

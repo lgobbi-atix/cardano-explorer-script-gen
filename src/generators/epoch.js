@@ -33,6 +33,7 @@ exports.generateEpoch = ({ transactionCount, blockCount, totalFeesPaid, totalOut
       totalFeesPaid: feesPaid,
       totalOutput: output
     });
+
     blocks.push(block);
 
     totalTxs -= txsInBlock;
@@ -40,5 +41,6 @@ exports.generateEpoch = ({ transactionCount, blockCount, totalFeesPaid, totalOut
     totalOut -= output;
     lastBlockId = block.id;
   }
+
   return { ...epoch, blocks };
 };
