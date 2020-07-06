@@ -30,7 +30,7 @@ const setAdaInTxOuts = ({ txOuts, totalAda }) => {
     for (let currentTxOut = 0; currentTxOut < txOutsAmount; currentTxOut++) {
       if (txOuts[currentEpoch][currentTxOut].hasTxIn) {
         const adaInTxOut =
-          currentTxOut === txOutsAmount ? remainingAda : randomNumber(0, remainingAda);
+          currentTxOut === txOutsAmount - 1 ? remainingAda : randomNumber(0, remainingAda);
         settedTxOuts[currentEpoch][currentTxOut].value = adaInTxOut;
         remainingAda -= adaInTxOut;
       }
