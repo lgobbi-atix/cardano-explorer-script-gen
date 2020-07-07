@@ -1,6 +1,6 @@
 {
   "name": "cardano-explorer-script-generator",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Fake data generating script",
   "main": "index.js",
   "scripts": {
