@@ -67,7 +67,7 @@ exports.generateTxInsOuts = ({ txs, txOuts, utxoCount, totalAda }) => {
       // Pick a random txOut
       const [txOut] = txOutsWithTxIns.splice(txIndex, 1);
       if (!txIns[currentEpoch]) txIns[currentEpoch] = [];
-      txIns[currentEpoch].push(txInGen.generate(tx.id, txOut.id, txOut.index));
+      txIns[currentEpoch].push(txInGen.generate(tx.id, txOut.tx_id, txOut.index));
       i++;
     }
   }
